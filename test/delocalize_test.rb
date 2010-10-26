@@ -64,6 +64,20 @@ class DelocalizeActiveRecordTest < ActiveRecord::TestCase
     assert_equal date, @product.released_on_before_type_cast
   end
 
+  test "default_parse rejects invalid dates" do
+    date = '32. Oktober 2009'
+    assert_raises ArgumentError do
+      parsed_date = Delocalize::LocalizedDateTimeParser.send(:default_parse, date, Date)
+    end
+  end
+
+  test "default_parse rejects invalid Feb, 29th on non-leap years" do
+    date = '29. Februar 2009'
+    assert_raises ArgumentError do
+      parsed_date = Delocalize::LocalizedDateTimeParser.send(:default_parse, date, Date)
+    end
+  end
+
   test "uses default parse if format isn't found" do
     date = Date.civil(2009, 10, 19)
 
